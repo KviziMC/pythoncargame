@@ -54,25 +54,24 @@ class Vehicle(pygame.sprite.Sprite):
         
 class PlayerVehicle(Vehicle):
     def __init__(self, x, y):
-        image = pygame.image.load('images/Audi.png')
+        image = pygame.image.load('images/Car.png')
         super().__init__(image, x, y)
         
 player_x = 250
-player_y = 400
+player_y = 500
 
 player_group = pygame.sprite.Group()
 player = PlayerVehicle(player_x, player_y)
 player_group.add(player)
 
-image_filenames = ['pickup_truck.png', 'semi_trailer.png', 'taxi.png', 'van.png']
+image_filenames = ['truck.png', 'Black_viper.png', 'taxi.png', 'Mini_van.png']
 vehicle_images = []
 for image_filename in image_filenames:
     image = pygame.image.load('images/' + image_filename)
     vehicle_images.append(image)
 
 vehicle_group = pygame.sprite.Group()
-
-#gameloop
+#gameloop 
 clock = pygame.time.Clock()
 fps = 120
 running = True
@@ -81,14 +80,14 @@ while running:
     for event in pygame.event.get():
         if event.type == QUIT:
             running = False
+
         if event.type == KEYDOWN:
             if event.key == K_LEFT and player.rect.center[0] > left_lane:
                 player.rect.x -= 100
             elif event.key == K_RIGHT and player.rect.center[0] < right_lane:
-                player.rect.x += 100
-            
+                player.rect.x += 100            
     #grass
-    screen.fill(green)
+    screen.fill(green)  
 
     #drawing the road
     pygame.draw.rect(screen, gray, road)
@@ -105,15 +104,39 @@ while running:
 
         
         player_group.draw(screen)
+        
+        
+        if len(vehicle_group) < 2:
+            add_vehicle = True
+            for vehicle in vehicle_group:
+                if vehicle.rect.top < vehicle.rect.height * 1.5:
+                    add_vehicle = False
+            if add_vehicle:
+                lane = random.choice(lanes)
+                image = random.choice(vehicle_images)
+                vehicle = Vehicle(image,lane,height / 2)
+                vehicle_group.add(vehicle)
+    for vehicle in vehicle_group:
+        vehicle.rect.y += speed
+        
+        if vehicle.rect.top >= height:
+            vehicle.kill()
+        
+            score += 1
+            
+            if score > 0 and score % 5 == 0:
+                speed += 1  
+                
+    vehicle_group.draw(screen)
+    
+    font = pygame.font.Font(pygame.font.get_default_font(), 16)
+    
+    pygame.display.update()
+    
 
 
 
 
-    if len(vehicle_group) < 2:
-        add_vehicle = True
-        for vehicle in vehicle_group:
-            if vehicle.rect.top < vehicle.rect.height * 1.5:
-                add_vehicle = False
 
 
 
